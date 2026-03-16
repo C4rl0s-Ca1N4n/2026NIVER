@@ -1,3 +1,12 @@
+const bgMusic = document.getElementById("bg-music");
+
+window.addEventListener("load", () => {
+  bgMusic.volume = 0.4; // volume mais baixo
+  bgMusic.play().catch(() => {
+    console.log("Autoplay bloqueado pelo navegador");
+  });
+});
+
 let equipamentoAtual = 0;
 
 let hashes = {
