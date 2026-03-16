@@ -1,0 +1,144 @@
+/* Reset básico e corpo */
+body {
+    margin: 10px;
+    background: #000;
+    color: #0f0;
+    font-family: "Courier New", monospace;
+    overflow-x: hidden;
+    text-align: justify; /* texto justificado */
+}
+
+p .sub {
+    max-width: 600px;
+    margin: 20px auto;
+    font-size: 1.2rem;
+    line-height: 1.5;
+}
+
+/* Noise (ruído de fundo) */
+.noise {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: url("noise.png") repeat; /* certifique-se que noise.png está na pasta correta */
+    opacity: 0.05;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+/* Glitch no título */
+.glitch {
+    text-align: center;
+    margin-top: 80px;
+    font-size: 3rem;
+    letter-spacing: 4px;
+    position: relative;
+    color: #0f0;
+    animation: flicker 0.15s infinite alternate;
+}
+
+/* Efeito flicker (piscar) */
+@keyframes flicker {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; text-shadow: 0 0 5px #0f0, 0 0 10px #0f0; }
+    100% { opacity: 0.7; text-shadow: 0 0 2px #0f0; }
+}
+
+/* Container das imagens */
+.container {
+    display: flex;
+    justify-content: center;
+    gap: 80px;
+    margin-top: 80px;
+}
+
+/* Itens clicáveis */
+.item {
+    text-align: center;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.item img {
+    width: 120px;
+    transition: 0.4s;
+}
+
+.item img.unlocked {
+    filter: none;
+    animation: glow 1s ease;
+}
+
+/* Glow das imagens desbloqueadas */
+@keyframes glow {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70%;
+    background: rgba(0,0,0,0.95);
+    z-index: 10;
+}
+
+/* Terminal dentro do modal */
+.terminal {
+    background: #010;
+    border: 1px solid #0f0;
+    padding: 30px;
+    margin: 10% auto;
+    width: 350px;
+    text-align: justify; /* texto justificado */
+}
+
+/* Input de código */
+input {
+    background: black;
+    border: 1px solid #0f0;
+    color: #0f0;
+    width: 70%;
+    padding: 5px;
+    margin-right: 10px;
+}
+
+/* Botão dentro do terminal */
+.terminal button {
+    background: #0f0;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    color: black;
+}
+
+/* Botão de resetar */
+button.reset {
+    display: block;
+    margin: 40px auto; /* centralizado */
+    background: #f00; /* vermelho */
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Pequena melhoria para o glitch de título */
+.glitch::before, .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    clip: rect(0, 900px, 0, 0);
+}

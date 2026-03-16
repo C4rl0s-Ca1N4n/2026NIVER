@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Revelação</title>
+
+<style>
+body{
+    margin:0;
+    background:black;
+    color:#0f0;
+    font-family:monospace;
+    overflow-x:hidden;
+    overflow-y:auto;
+}
+
+#terminal{
+    padding:50px;
+    white-space:pre-line;
+    font-size:1.2rem;
+}
+
+.glitch{
+    animation: glitch 0.1s infinite;
+}
+
+@keyframes glitch{
+    0% { transform: translate(1px, -1px); }
+    50% { transform: translate(-1px, 2px); }
+    100% { transform: translate(1px, 1px); }
+}
+
+#proximo{
+    display:none;
+    text-align:center;
+    margin-top:40px;
+}
+
+button{
+    background:#0f0;
+    border:none;
+    padding:12px 25px;
+    cursor:pointer;
+    font-family:monospace;
+}
+
+input{
+    background:black;
+    border:1px solid #0f0;
+    color:#0f0;
+    padding:10px;
+    margin-top:15px;
+}
+</style>
+</head>
+<body>
+
+<div id="terminal"></div>
+
+<div id="proximo">
+    <p>Nova sequência detectada.</p>
+    <button onclick="mostrarCampo()">INICIAR PRÓXIMA SEQUÊNCIA</button>
+    <div id="campo" style="display:none;">
+        <p>> inserir código final:</p>
+        <input type="text" id="codigoFinal">
+        <button onclick="verificarFinal()">executar</button>
+        <p id="erro"></p>
+    </div>
+</div>
+
+<audio id="interferencia" src="assets/interferencia.mp3"></audio>
+
+<script>
+
+const texto = `
+Interface da Cidadela // Reconhecimento concluído
+
+...
+
+Você conseguiu ativar os três núcleos.
+
+Isso significa apenas duas possibilidades.
+
+Ou você encontrou as respostas.
+
+Ou você é uma delas.
+
+Eu deixei este sistema antes da queda.
+Antes da Cidadela perceber que eu já sabia.
+
+Cada selo é uma memória.
+Cada memória é uma ruptura.
+
+Se você chegou até aqui...
+então você não é um erro.
+
+Mas também não é inocente.
+
+A pergunta não é quem você é.
+
+É quantas vezes você já fez isso...
+`;
+
+let i = 0;
+const velocidade = 40;
+const terminal = document.getElementById("terminal");
+const audio = document.getElementById("interferencia");
+
+function digitar(){
+    if(i < texto.length){
+        terminal.innerHTML += texto.charAt(i);
+        i++;
+        setTimeout(digitar, velocidade);
+    } else {
+        ativarFalha();
+    }
+}
+
+function ativarFalha(){
+    document.body.classList.add("glitch");
+    audio.play();
+
+    setTimeout(()=>{
+        document.getElementById("proximo").style.display="block";
+    },3000);
+
+    setTimeout(()=>{
+    document.getElementById("proximo").style.display="block";
+    window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "smooth"
+    });
+},3000);
+}
+
+function mostrarCampo(){
+    document.getElementById("campo").style.display="block";
+}
+
+async function sha256(text) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+// Código final secreto
+const hashFinal = "257e27c111d93059c6918075049882c192bf381a79545c9ea1f6b983e49841af"; 
+// exemplo (substituir depois)
+
+async function verificarFinal(){
+    let input = document.getElementById("codigoFinal").value.trim().toLowerCase();
+    let hashInput = await sha256(input);
+
+    if(hashInput === hashFinal){
+        window.location.href="radar.html";
+    } else {
+        document.getElementById("erro").innerText="sequência rejeitada.";
+    }
+}
+
+digitar();
+
+</script>
+
+</body>
+</html>

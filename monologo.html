@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Encerramento</title>
+
+<style>
+
+body{
+    margin:0;
+    background:black;
+    color:#0f0;
+    font-family:monospace;
+    overflow-x:hidden;
+    overflow-y:auto;
+}
+
+.container{
+    padding:50px;
+    max-width:700px;
+    margin:auto;
+}
+
+#texto{
+    white-space:pre-line;
+    line-height:1.6;
+    font-size:1.2rem;
+    text-align:center;
+}
+
+.email-alert{
+    margin-top:40px;
+    font-size:1.2rem;
+    display:none;
+    animation: blink 1s infinite;
+    text-align:center;
+}
+
+input{
+    width:100%;
+    background:black;
+    border:1px solid #0f0;
+    color:#0f0;
+    padding:14px;
+    margin-top:20px;
+    display:none;
+    font-family:monospace;
+    font-size:1rem;
+}
+
+button{
+    width:100%;
+    background:#0f0;
+    border:none;
+    padding:16px;
+    margin-top:10px;
+    cursor:pointer;
+    font-family:monospace;
+    font-size:1rem;
+    display:none;
+}
+
+#feedback{
+    margin-top:10px;
+    min-height:20px;
+}
+
+@keyframes blink{
+  0%{opacity:1;}
+  50%{opacity:0.3;}
+  100%{opacity:1;}
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div id="texto"></div>
+
+<div id="email-alert" class="email-alert">
+> 📩 NOVA MENSAGEM RECEBIDA 📩 - cainanprime@gmail.com
+</div>
+
+<input type="text" id="resposta" placeholder="> inserir resposta...">
+
+<button onclick="verificarResposta()">Executar conexão Multiversal.</button>
+
+<p id="feedback"></p>
+
+</div>
+
+<audio id="email-som">
+<source src="https://assets.mixkit.co/sfx/preview/mixkit-bell-notification-933.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+
+const textoCompleto = 
+`Chegamos ao fim.
+
+Ou, ao menos, ao que parece ser o fim.
+
+Cada código quebrado... um fragmento aberto.
+
+Cada erro... um desvio necessário, um caminho que ninguém jamais deveria trilhar.
+
+Você atravessou camadas que não foram feitas para serem vistas.
+
+Realidades que sussurram segredos esquecidos, dimensões que dobram sobre si mesmas.
+
+E ainda assim, você chegou até aqui.
+
+Mais forte. Mais atento. Mais… consciente do que o multiverso realmente esconde.
+
+Mas toda jornada deixa uma última pergunta.
+
+Uma pergunta que ecoa através de todas as realidades,
+
+Para onde seguimos a partir daqui?`;
+
+const elementoTexto = document.getElementById("texto");
+const emailAlert = document.getElementById("email-alert");
+const input = document.getElementById("resposta");
+const button = document.querySelector("button");
+const som = document.getElementById("email-som");
+
+let i = 0;
+const velocidade = 35;
+
+function digitar(){
+  if(i < textoCompleto.length){
+    elementoTexto.innerHTML += textoCompleto.charAt(i);
+    i++;
+    setTimeout(digitar, velocidade);
+  } 
+  else{
+    setTimeout(()=>{
+
+      emailAlert.style.display="block";
+      input.style.display="block";
+      button.style.display="block";
+
+      som.play();
+
+      input.scrollIntoView({
+        behavior:'smooth',
+        block:'center'
+      });
+
+      input.focus();
+
+    },1500);
+  }
+}
+
+digitar();
+
+function verificarResposta(){
+
+  const resposta = input.value.trim().toLowerCase();
+  const feedback = document.getElementById("feedback");
+  const respostaCorreta = "viajante";
+
+  if(resposta === respostaCorreta){
+
+    feedback.textContent="> sequência aceita. iniciando conexão...";
+
+    setTimeout(()=>{
+      window.location.href="fim.html";
+    },1000);
+
+  }else{
+
+    feedback.textContent="> sequência rejeitada.";
+
+  }
+
+}
+
+</script>
+
+</body>
+</html>

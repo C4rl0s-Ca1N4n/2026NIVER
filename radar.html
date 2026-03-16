@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Rastreamento Dimensional</title>
+
+<style>
+body{
+    margin:0;
+    background:black;
+    color:#0f0;
+    font-family:monospace;
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+}
+
+#titulo{
+    text-align:center;
+    padding:15px;
+    border-bottom:1px solid #0f0;
+}
+
+#radarContainer{
+    flex:1;
+    position:relative;
+    overflow:hidden;
+}
+
+canvas{
+    width:100%;
+    height:100%;
+    display:block;
+    background:#001100;
+}
+
+#status{
+    text-align:center;
+    padding:10px;
+    height:30px;
+    border-top:1px solid #0f0;
+}
+
+.tremor{
+    animation: tremor 0.05s infinite;
+}
+
+@keyframes tremor{
+    0%{transform:translate(2px,-2px);}
+    50%{transform:translate(-2px,2px);}
+    100%{transform:translate(2px,2px);}
+}
+</style>
+</head>
+<body>
+
+<div id="titulo">RASTREANDO REALIDADE FRATURADA</div>
+
+<div id="radarContainer">
+    <canvas id="radar"></canvas>
+</div>
+
+<div id="status"></div>
+
+<script>
+
+const canvas = document.getElementById("radar");
+const ctx = canvas.getContext("2d");
+const container = document.getElementById("radarContainer");
+const status = document.getElementById("status");
+
+// Ajusta tamanho real do canvas
+function resizeCanvas(){
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+let ponto = { x: 200, y: 200 };
+let alvo = { x:1200, y: 400 }; // posição invisível
+
+// === ÁUDIO ===
+let audioCtx;
+let oscillator;
+let gainNode;
+
+function iniciarAudio(){
+    if(!audioCtx){
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        oscillator = audioCtx.createOscillator();
+        gainNode = audioCtx.createGain();
+
+        oscillator.type = "sine";
+        oscillator.frequency.value = 100;
+        gainNode.gain.value = 0;
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.start();
+    }
+}
+
+canvas.addEventListener("mousemove", (e)=>{
+    iniciarAudio(); // ativa som após primeira interação
+
+    const rect = canvas.getBoundingClientRect();
+    ponto.x = e.clientX - rect.left;
+    ponto.y = e.clientY - rect.top;
+});
+
+function desenhar(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    ctx.strokeStyle="#0f0";
+
+    // grade retangular
+    for(let i=0;i<canvas.width;i+=100){
+        ctx.beginPath();
+        ctx.moveTo(i,0);
+        ctx.lineTo(i,canvas.height);
+        ctx.stroke();
+    }
+
+    for(let i=0;i<canvas.height;i+=100){
+        ctx.beginPath();
+        ctx.moveTo(0,i);
+        ctx.lineTo(canvas.width,i);
+        ctx.stroke();
+    }
+
+    // ponto do usuário
+    ctx.fillStyle="#0f0";
+    ctx.beginPath();
+    ctx.arc(ponto.x,ponto.y,8,0,Math.PI*2);
+    ctx.fill();
+}
+
+function distancia(){
+    let dx = ponto.x - alvo.x;
+    let dy = ponto.y - alvo.y;
+    return Math.sqrt(dx*dx + dy*dy);
+}
+
+let ecoAtivo = false;
+
+function atualizar(){
+    desenhar();
+
+    let d = distancia();
+    let proximidade = Math.max(0, 400 - d);
+
+    if(gainNode){
+        gainNode.gain.value = proximidade / 800;
+        oscillator.frequency.value = 100 + proximidade;
+    }
+
+    // tremor apenas no radar
+    if(proximidade > 50){
+        container.classList.add("tremor");
+    } else {
+        container.classList.remove("tremor");
+    }
+
+    // eco metálico perto
+    if(d < 60 && !ecoAtivo && audioCtx){
+        ecoMetalico();
+        ecoAtivo = true;
+    }
+
+    if(d < 10){
+        ruptura();
+    }
+
+    requestAnimationFrame(atualizar);
+}
+
+function ecoMetalico(){
+    let osc = audioCtx.createOscillator();
+    let gain = audioCtx.createGain();
+
+    osc.type="triangle";
+    osc.frequency.value=900;
+
+    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+1.5);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime+1.5);
+}
+
+function ruptura(){
+    status.innerText="ALINHAMENTO COM REALIDADE FRATURADA ESTABELECIDA.";
+    container.classList.remove("tremor");
+
+    if(gainNode) gainNode.gain.value = 0;
+
+    setTimeout(()=>{
+        window.location.href="livro1.html";
+    },2000);
+}
+
+atualizar();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Abertura do Portal</title>
+
+<style>
+body{
+    margin:0;
+    height:100vh;
+    background: radial-gradient(circle at center, #0f0f1a, #000);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family: Arial, sans-serif;
+    color:rgb(2, 180, 26);
+    overflow:hidden;
+    transition: background 2s ease;
+}
+
+#challengeContainer{
+    text-align:center;
+    width:100%;
+    position:relative;
+    z-index:5;
+}
+
+#countdown{
+    font-size:10vw;
+    font-weight:bold;
+    letter-spacing:10px;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+    0%{ transform:scale(1); text-shadow:0 0 20px #00ffcc; }
+    50%{ transform:scale(1.05); text-shadow:0 0 40px #00ffcc; }
+    100%{ transform:scale(1); text-shadow:0 0 20px #00ffcc; }
+}
+
+@keyframes shake{
+    0%{ transform:translate(0px,0px); }
+    25%{ transform:translate(5px,-5px); }
+    50%{ transform:translate(-5px,5px); }
+    75%{ transform:translate(-5px,5px); }
+    100%{ transform:translate(0px,0px); }
+}
+
+.shaking{
+    animation: shake 0.2s infinite, pulse 1.5s infinite;
+}
+
+/* 💥 Explosão sem bloquear clique */
+.explosion{
+    position:fixed;
+    top:50%;
+    left:50%;
+    width:50px;
+    height:50px;
+    background:#00ffcc;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    animation: explode 0.8s forwards;
+    pointer-events:none; /* 🔥 impede bloqueio */
+    z-index:1;
+}
+
+@keyframes explode{
+    0%{ width:50px; height:50px; opacity:1; }
+    100%{ width:2000px; height:2000px; opacity:0; }
+}
+
+.portal-open{
+    background: radial-gradient(circle at center, #ff0037 0%, #000 70%);
+}
+
+#mysteryMessage{
+    font-size:2rem;
+    opacity:0;
+    margin-top:30px;
+    letter-spacing:3px;
+    transition: opacity 2s ease;
+    pointer-events:none;
+}
+
+/* 🔥 BOTÃO GARANTIDO CLICÁVEL */
+#challengeButton{
+    margin-top:40px;
+    padding:20px 60px;
+    font-size:1.5rem;
+    background:#00ffcc;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.3s;
+    display:none;
+    position:relative;
+    z-index:10; /* 🔥 acima de tudo */
+}
+
+#challengeButton:hover{
+    background:#eeff00;
+    box-shadow:0 0 25px #00ffaa;
+}
+</style>
+</head>
+
+<body>
+
+<div id="challengeContainer">
+
+    <div id="countdownBox">
+        <h2>O PRÓXIMO PORTAL SERÁ ABERTO EM</h2>
+        <div id="countdown"></div>
+    </div>
+
+    <div id="mysteryMessage">
+        O Véu da realidade foi rasgado...
+    </div>
+
+    <button id="challengeButton" onclick="goToNextPage()">
+        Entrar no Portal
+    </button>
+
+</div>
+
+<audio id="bg-music" loop>
+  <source src="assets/Liber-Tea.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+
+const bgMusic = document.getElementById("bg-music");
+
+window.addEventListener("load", () => {
+  bgMusic.volume = 0.4; // volume mais baixo
+  bgMusic.play().catch(() => {
+    console.log("Autoplay bloqueado pelo navegador");
+  });
+});
+
+const releaseDate = new Date("2026-05-20T12:12:12").getTime();
+
+const countdown = document.getElementById("countdown");
+const button = document.getElementById("challengeButton");
+const box = document.getElementById("countdownBox");
+const body = document.body;
+const message = document.getElementById("mysteryMessage");
+
+const timer = setInterval(function(){
+
+    const now = new Date().getTime();
+    const distance = releaseDate - now;
+
+    if(distance < 0){
+        clearInterval(timer);
+
+        const explosion = document.createElement("div");
+        explosion.classList.add("explosion");
+        document.body.appendChild(explosion);
+
+        setTimeout(() => {
+            body.classList.add("portal-open");
+            box.style.display = "none";
+
+            message.style.opacity = "1";
+
+            setTimeout(() => {
+                button.style.display = "inline-block";
+            }, 2500);
+
+        }, 800);
+
+        return;
+    }
+
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+
+    countdown.innerHTML =
+        days + " : " +
+        hours.toString().padStart(2,'0') + " : " +
+        minutes.toString().padStart(2,'0') + " : " +
+        seconds.toString().padStart(2,'0');
+
+    if(distance <= 10000){
+        countdown.classList.add("shaking");
+        countdown.style.color = "#079C2A";
+    }
+
+}, 1000);
+
+function goToNextPage(){
+    window.location.href = "mapa.html";
+}
+
+</script>
+
+</body>
+</html>

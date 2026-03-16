@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Arquivo Recuperado - Encerramento ARG</title>
+
+<style>
+/* Corpo da página */
+body{
+    margin:0;
+    background:#0a2e0a; /* verde escuro */
+    color:#c8ffc8; /* verde suave para texto */
+    font-family: monospace;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+/* Topo */
+#topo{
+    width:100%;
+    text-align:center;
+    padding:15px;
+    border-bottom:2px solid #3fa63f;
+    background:#0f3f0f;
+    color:#e0ffe0;
+    font-weight:bold;
+    animation: brilhoTop 3s infinite alternate;
+}
+
+/* Animação de brilho no topo */
+@keyframes brilhoTop {
+    0% { border-color:#3fa63f; }
+    50% { border-color:#5fc95f; }
+    100% { border-color:#3fa63f; }
+}
+
+/* Mensagem de instrução */
+#mensagem{
+    text-align:center;
+    padding:20px;
+    color:#d0ffd0;
+}
+
+/* Conteúdo central */
+#conteudo{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+}
+
+/* Capa do livro */
+#capa{
+    width:220px; 
+    cursor:pointer;
+    border:2px solid #3fa63f;
+    transition:0.3s;
+    animation: brilhoBorda 2s infinite alternate;
+}
+
+#capa:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 20px #5fc95f;
+}
+
+/* Animação de brilho na borda */
+@keyframes brilhoBorda {
+    0% { border-color:#3fa63f; box-shadow:0 0 5px #3fa63f; }
+    50% { border-color:#5fc95f; box-shadow:0 0 15px #5fc95f; }
+    100% { border-color:#3fa63f; box-shadow:0 0 5px #3fa63f; }
+}
+
+/* Área de ações (botões) */
+#acoes{
+    display:flex;
+    gap:15px;
+}
+
+/* Botões */
+button{
+    background:#3fa63f;
+    border:2px solid #1e5c1e;
+    padding:10px 20px;
+    cursor:pointer;
+    font-family:monospace;
+    color:#f0fff0;
+    transition:0.3s;
+    animation: brilhoBotao 2s infinite alternate;
+}
+
+button:hover{
+    background:#5fc95f;
+}
+
+/* Brilho animado nos botões */
+@keyframes brilhoBotao {
+    0% { border-color:#1e5c1e; box-shadow:0 0 5px #3fa63f; }
+    50% { border-color:#5fc95f; box-shadow:0 0 15px #5fc95f; }
+    100% { border-color:#1e5c1e; box-shadow:0 0 5px #3fa63f; }
+}
+
+/* Leitor fullscreen */
+#leitorFullscreen{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100vw;
+    height:100vh;
+    background:#0a2e0a;
+    z-index:9999;
+    animation:none;
+    overflow:hidden;
+}
+
+#leitorFullscreen.vibrando{
+    animation: vibrar 0.1s infinite;
+}
+
+/* Vibrar leve fundo quando PDF abre */
+@keyframes vibrar {
+    0% { transform: translate(0,0); }
+    25% { transform: translate(1px,-1px); }
+    50% { transform: translate(-1px,1px); }
+    75% { transform: translate(1px,1px); }
+    100% { transform: translate(0,0); }
+}
+
+#leitorFullscreen iframe{
+    width:100%;
+    height:100%;
+    border:none;
+}
+
+/* Mensagem final ARG */
+#mensagemFinal {
+    display:none;
+    text-align:center;
+    font-size:1.2rem;
+    color:#d0ffd0;
+    padding:20px;
+    animation: brilhoMensagem 3s infinite alternate;
+}
+
+@keyframes brilhoMensagem {
+    0% { color:#c8ffc8; }
+    50% { color:#e0ffe0; }
+    100% { color:#c8ffc8; }
+}
+</style>
+</head>
+<body>
+
+<div id="topo">
+ARQUIVO RECUPERADO // REALIDADE ALTERADA
+</div>
+
+<div id="mensagem">
+Fragmento restaurado.<br>
+PARABÉNS, A TRAVESSIA CHEGOU AO FIM.<br>
+O multiverso agora aguarda por você em novas aventuras…
+</div>
+
+<div id="conteudo">
+    <img id="capa" src="assets/Livro3.png" onclick="abrirLeitura()">
+
+    <div id="acoes">
+        <a href="assets/Mundos Deslocados.pdf" download>
+            <button>BAIXAR</button>
+        </a>
+    </div>
+</div>
+
+<div id="mensagemFinal">
+PARABÉNS, A TRAVESSIA CHEGOU AO FIM.<br>
+O multiverso agora aguarda por você em novas aventuras…
+</div>
+
+<div id="leitorFullscreen">
+    <iframe src="assets/Mundos Deslocados.pdf"></iframe>
+</div>
+
+<audio id="bg-music" loop>
+  <source src="assets/N25.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+
+const bgMusic = document.getElementById("bg-music");
+
+window.addEventListener("load", () => {
+  bgMusic.volume = 0.4; // volume mais baixo
+  bgMusic.play().catch(() => {
+    console.log("Autoplay bloqueado pelo navegador");
+  });
+});
+
+function abrirLeitura(){
+    const leitor = document.getElementById("leitorFullscreen");
+    const mensagemFinal = document.getElementById("mensagemFinal");
+
+    leitor.style.display = "block";
+    leitor.classList.add("vibrando");
+
+    // Exibe mensagem final com leve atraso
+    setTimeout(() => {
+        mensagemFinal.style.display = "block";
+    }, 1000);
+
+    // Tenta fullscreen
+    if (leitor.requestFullscreen) {
+        leitor.requestFullscreen();
+    }
+}
+
+// Fecha o leitor se sair do fullscreen
+document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement) {
+        const leitor = document.getElementById("leitorFullscreen");
+        const mensagemFinal = document.getElementById("mensagemFinal");
+        leitor.style.display = "none";
+        leitor.classList.remove("vibrando");
+        mensagemFinal.style.display = "none";
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O Fim do Viajante - Mensagem do Multiverso</title>
+
+<style>
+body {
+  margin: 0;
+  background: black;
+  color: white;
+  font-family: Georgia, serif;
+
+  display: flex;
+  justify-content: flex-start; 
+  flex-direction: column;
+  align-items: center; 
+  min-height: 100vh;
+  overflow-y: auto; 
+  padding: 20px;
+}
+
+.container {
+  width: 90%;
+  max-width: 800px;
+  text-align: center;
+}
+
+#texto {
+  white-space: pre-line;
+  line-height: 1.7;
+  font-size: 1.1rem;
+}
+
+.cursor {
+  display: inline-block;
+  width: 8px;
+  background: white;
+  margin-left: 4px;
+  animation: blinkCursor 1s infinite;
+}
+
+@keyframes blinkCursor {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Terminal centralizado fixo */
+#terminal {
+  display: none;
+  color: #00ff00;
+  font-family: monospace;
+  font-size: 1.2rem;
+  animation: blinkGreen 1s infinite;
+  
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+@keyframes blinkGreen {
+  0% { opacity: 1; }
+  50% { opacity: 0.2; }
+  100% { opacity: 1; }
+}
+
+@media (max-width: 480px) {
+  #texto {
+    font-size: 0.95rem;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div id="texto"></div><span class="cursor"></span>
+  <div id="terminal">
+    > CARREGANDO ARQUIVO...<br>
+    > ACESSO LIBERADO
+  </div>
+</div>
+
+<audio id="typing-sound">
+  <source src="https://assets.mixkit.co/sfx/preview/mixkit-computer-notification-2120.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="bg-music" loop>
+  <source src="assets/N25.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const monologo = 
+`Se você está ouvindo minha voz, 
+
+É porque atravessou os labirintos que o multiverso ergueu contra nós.
+
+Eu caminhei por mundos quebrados.
+
+Enfrentei reflexos meus que já não me reconheciam.
+
+Fui testado, observado, confrontado… e, mesmo assim, prossegui.
+
+Mas o fim nunca foi um limite.
+
+O fim é apenas o início de outra travessia.
+
+Cada desafio que superamos é um novo portal.
+
+Um convite para seguir adiante, para descobrir novas verdades, novas realidades, novas aventuras.
+
+Se você chegou até aqui, então compreende o que descobri tarde demais.
+
+Não somos meras peças de um jogo.
+
+Somos os atravessadores, os que ousam avançar.
+
+Toda travessia exige coragem. Toda jornada exige atenção.
+
+Agora… a história deixa de ser apenas minha.
+
+Ela se torna nossa.
+
+E o multiverso, silencioso e infinito, continua a nos ensinar.
+
+Em nossos próximos caminhos, ele revelará segredos que ainda nem imaginamos.
+
+Até lá, mantenha-se curioso, mantenha-se vigilante.
+
+Meu amigo desconecido, 
+
+O próximo portal 
+
+Nos aguarda...`;
+
+const elementoTexto = document.getElementById("texto");
+const terminal = document.getElementById("terminal");
+const cursor = document.querySelector(".cursor");
+const typingSound = document.getElementById("typing-sound");
+let i = 0;
+
+const bgMusic = document.getElementById("bg-music");
+
+window.addEventListener("load", () => {
+  bgMusic.volume = 0.4; // volume mais baixo
+  bgMusic.play().catch(() => {
+    console.log("Autoplay bloqueado pelo navegador");
+  });
+});
+
+function digitar() {
+  if (i < monologo.length) {
+    const char = monologo.charAt(i);
+    elementoTexto.innerHTML += char;
+    
+    // Som de digitação
+    if (char !== "\n" && char !== " ") {
+      typingSound.currentTime = 0;
+      typingSound.play();
+    }
+
+    // Pausas dramáticas
+    let delay = 35;
+    if (char === "\n") delay = 200; 
+    if (char === "…") delay = 400;
+
+    i++;
+    elementoTexto.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    setTimeout(digitar, delay);
+  } else {
+    cursor.style.display = "none";
+    setTimeout(iniciarTerminal, 1500);
+  }
+}
+
+function iniciarTerminal() {
+  elementoTexto.style.display = "none";
+  terminal.style.display = "block";
+
+  setTimeout(() => {
+    // Redireciona para próxima página ou arquivo
+    window.location.href = "livro2.html"; 
+  }, 4000);
+}
+
+digitar();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Ruptura Multiversal</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="noise"></div>
+
+<h1 class="glitch">PROTOCOLO DE CONTENÇÃO</h1>
+<p class="sub">No limiar entre mundos, onde o tempo se dobra e as leis da realidade se tornam instáveis, 
+    você encontra três dispositivos antigos, forjados por tecnologias que desafiam qualquer compreensão. 
+    Cada aparelho pulsa com energia viva, suas telas brilhando como portais para dimensões que coexistem e se entrelaçam.
+    Apenas os códigos corretos revelarão o caminho seguro entre as realidades.</p>
+
+<button class="reset" onclick="resetar()">Reiniciar Sistema</button>
+
+<div class="container">
+
+    <div class="item" onclick="abrirModal(1)">
+        <img id="img1" src="assets/Lock1.png">
+        
+    </div>
+
+    <div class="item" onclick="abrirModal(2)">
+        <img id="img2" src="assets/Lock2.png">
+        
+    </div>
+
+    <div class="item" onclick="abrirModal(3)">
+        <img id="img3" src="assets/Lock3.png">
+        
+    </div>
+
+</div>
+
+<div id="modal" class="modal">
+    <div class="terminal">
+        <p>> inserir chave:</p>
+        <input type="text" id="codigoInput">
+        <button onclick="verificarCodigo()">executar</button>
+        <p id="mensagem"></p>
+        <p id="tentativas"></p>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

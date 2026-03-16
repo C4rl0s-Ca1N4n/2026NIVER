@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teste de Sequência - Cidadela</title>
+
+<style>
+body{
+    margin:0;
+    background:black;
+    color:#fff68f;
+    font-family:monospace;
+    text-align:center;
+}
+
+h1{
+    margin-top:20px;
+    font-size:20px;
+}
+
+a {
+color: inherit;
+text-decoration: none;
+}
+
+/* Sequências já concluídas */
+#completed{
+    margin-top:20px;
+    min-height:200px;
+    font-size:28px;
+    letter-spacing:10px;
+    display:flex;
+    flex-direction:column; /* vertical */
+    align-items:center;
+    gap:10px;
+}
+
+/* Cada sequência completa cercada por borda */
+.sequence-completed {
+    display:flex;
+    flex-direction:row; /* horizontal */
+    justify-content:center;
+    align-items:center;
+    padding:10px;
+    border:2px solid #5fc95f;
+    border-radius:12px;
+    gap:8px;
+}
+
+.sequence-completed span{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:40px;
+    height:40px;
+    background:#ffd700;
+    color:black;
+    border-radius:12px;
+    font-size:28px;
+}
+
+/* Sequência atual digitada */
+#current{
+    margin-top:20px;
+    font-size:32px;
+    min-height:40px;
+    display:flex;
+    flex-direction:row; /* horizontal */
+    justify-content:center;
+    align-items:center;
+    gap:8px;
+}
+
+/* Cada seta digitada aparece em quadrado amarelo */
+#current span{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:40px;
+    height:40px;
+    background:#ffd700;
+    color:black;
+    border-radius:12px;
+    font-size:28px;
+}
+
+/* Botões embaixo */
+.controls{
+    position:fixed;
+    bottom:20px;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    gap:15px;
+}
+
+/* Botões arredondados */
+.arrow{
+    width:40px;
+    height:40px;
+    background:#111;
+    border:2px solid #ffd700;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:28px;
+    cursor:pointer;
+    user-select:none;
+    transition:0.2s;
+}
+
+.arrow:hover{
+    background:#ffd700;
+    color:black;
+    transform: scale(1.1);
+}
+
+.arrow:active{
+    background:#ffd700;
+    color:black;
+    transform: scale(0.95);
+}
+
+.acesso{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:black;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:3rem;
+    font-family:monospace;
+    color:#00ff88;
+
+    opacity:0;
+    pointer-events:none;
+
+    transition:opacity 1s;
+}
+
+.acesso-box{
+    border:2px solid #00ff88;
+    padding:30px 60px;
+    animation:pulse 1s infinite alternate;
+}
+
+@keyframes pulse{
+    from{ box-shadow:0 0 10px #00ff88;}
+    to{ box-shadow:0 0 30px #00ff88;}
+}
+
+/* Borda verde enquanto correta */
+.arrow.correct {
+    border:2px solid #5fc95f !important;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Sequencias Primordiais de Conexão Multiversal</h1>
+<h1><a href="https://www.reddit.com/r/ArquivoDoViajante/">S.P.C.M.</a></h1>
+Digite as sequências na ordem correta para avançar. Use os botões ou as setas do teclado. <br>
+</p>
+
+<div id="completed"></div>
+<div id="current"></div>
+
+<div class="controls">
+    <div class="arrow" data-dir="left">←</div>
+    <div class="arrow" data-dir="up">↑</div>
+    <div class="arrow" data-dir="down">↓</div>
+    <div class="arrow" data-dir="right">→</div>  
+</div>
+
+<script>
+// 🔥 DEFINA AS SEQUÊNCIAS AQUI
+const sequences = [
+
+["up","right","up","left","down","down"],
+
+["up","up","right","down","right","up","left","down"],
+
+["right","up","up","left","down","down","right","up","right","down"],
+
+["up","right","down","right","up","up","left","down","left","up","right","down"],
+
+["up","up","right","down","right","up","left","left","down","right","up","right","down","left","up"]
+
+];
+
+let currentSequence = 0;
+let userInput = [];
+
+const completedDiv = document.getElementById("completed");
+const currentDiv = document.getElementById("current");
+
+const arrowSymbol = {
+    up:"↑",
+    down:"↓",
+    right:"→",
+    left:"←"
+};
+
+const arrows = document.querySelectorAll(".arrow");
+
+arrows.forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+        handleInput(btn.dataset.dir);
+    });
+});
+
+function handleInput(direction){
+    userInput.push(direction);
+
+    // Cria quadrado amarelo para seta digitada
+    const span = document.createElement("span");
+    span.textContent = arrowSymbol[direction];
+    currentDiv.appendChild(span);
+
+    const expected = sequences[currentSequence];
+
+    let correctSoFar = true;
+    for(let i=0;i<userInput.length;i++){
+        if(userInput[i] !== expected[i]){
+            correctSoFar = false;
+            break;
+        }
+    }
+
+    // Borda verde nos botões enquanto sequência correta
+    arrows.forEach(a=>a.classList.remove("correct"));
+    if(correctSoFar){
+        arrows.forEach(a=>{
+            a.classList.add("correct");
+        });
+    }
+
+    if(userInput.length === expected.length){
+        if(correctSoFar){
+            // Sequência completa: adicionar no completed com borda
+            const seqContainer = document.createElement("div");
+            seqContainer.classList.add("sequence-completed");
+
+            userInput.forEach(dir=>{
+                const spanCopy = document.createElement("span");
+                spanCopy.textContent = arrowSymbol[dir];
+                seqContainer.appendChild(spanCopy);
+            });
+
+            completedDiv.appendChild(seqContainer);
+
+            currentSequence++;
+            userInput = [];
+            currentDiv.innerHTML = "";
+
+            arrows.forEach(a=>a.classList.remove("correct"));
+
+            if(currentSequence === sequences.length){
+                setTimeout(()=>{
+                    window.location.href="monologo.html";
+                },1500);
+            }
+        } else {
+            // Sequência incorreta: reset
+            resetAll();
+        }
+    }
+}
+
+function resetAll(){
+    currentSequence = 0;
+    userInput = [];
+    completedDiv.innerHTML = "";
+    currentDiv.innerHTML = "";
+    arrows.forEach(a=>a.classList.remove("correct"));
+}
+
+
+document.addEventListener("keydown", function(event){
+
+    if(event.key === "ArrowUp"){
+        handleInput("up");
+    }
+
+    if(event.key === "ArrowDown"){
+        handleInput("down");
+    }
+
+    if(event.key === "ArrowLeft"){
+        handleInput("left");
+    }
+
+    if(event.key === "ArrowRight"){
+        handleInput("right");
+    }
+
+});
+
+
+</script>
+
+</body>
+</html>

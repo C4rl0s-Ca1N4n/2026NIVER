@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Arquivo Recuperado</title>
+
+<style>
+body{
+    margin:0;
+    background:black;
+    color:#0f0;
+    font-family:monospace;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    height:100vh;
+}
+
+#topo{
+    width:100%;
+    text-align:center;
+    padding:15px;
+    border-bottom:1px solid #0f0;
+}
+
+#mensagem{
+    text-align:center;
+    padding:20px;
+}
+
+#conteudo{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+}
+
+#capa{
+    width:220px; /* tamanho reduzido */
+    cursor:pointer;
+    border:1px solid #0f0;
+    transition:0.3s;
+}
+
+#capa:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 15px #0f0;
+}
+
+#acoes{
+    display:flex;
+    gap:15px;
+}
+
+button{
+    background:#0f0;
+    border:none;
+    padding:10px 20px;
+    cursor:pointer;
+    font-family:monospace;
+}
+
+#leitorFullscreen{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100vw;
+    height:100vh;
+    background:black;
+    z-index:9999;
+}
+
+#leitorFullscreen iframe{
+    width:100%;
+    height:100%;
+    border:none;
+}
+</style>
+</head>
+<body>
+
+<div id="topo">
+ARQUIVO RECUPERADO // REALIDADE ALTERADA
+</div>
+
+<div id="mensagem">
+Fragmento restaurado.<br>
+Toque na energia emanada para acessar o manuscrito.
+</div>
+
+<div id="conteudo">
+    <img id="capa" src="assets/Livro2.png" onclick="abrirLeitura()">
+
+    <div id="acoes">
+        <a href="assets/Herdeira da Dor.pdf" download>
+            <button>BAIXAR</button>
+        </a>
+
+        <button onclick="proximaFase()">Avançar</button>
+    </div>
+</div>
+
+<div id="leitorFullscreen">
+    <iframe src="assets/Herdeira da Dor.pdf"></iframe>
+</div>
+
+<audio id="bg-music" loop>
+  <source src="assets/N25.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+
+const bgMusic = document.getElementById("bg-music");
+
+window.addEventListener("load", () => {
+  bgMusic.volume = 0.4; // volume mais baixo
+  bgMusic.play().catch(() => {
+    console.log("Autoplay bloqueado pelo navegador");
+  });
+});
+
+function abrirLeitura(){
+    const leitor = document.getElementById("leitorFullscreen");
+    leitor.style.display = "block";
+
+    if (leitor.requestFullscreen) {
+        leitor.requestFullscreen();
+    }
+}
+
+document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement) {
+        document.getElementById("leitorFullscreen").style.display = "none";
+    }
+});
+
+function proximaFase(){
+    window.location.href="timer.html";
+}
+
+</script>
+
+</body>
+</html>
