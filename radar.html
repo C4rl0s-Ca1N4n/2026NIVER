@@ -2,24 +2,44 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
 <title>Rastreamento Dimensional</title>
 
 <style>
-body{
+html, body{
     margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
     background:black;
-    color:#0f0;
-    font-family:monospace;
+}
+
+body{
+    display:flex;
+}
+
+/* container com borda lateral */
+#app{
+    width:100%;
+    height:100%;
+    max-width:500px;
+    margin:auto;
     display:flex;
     flex-direction:column;
-    height:100vh;
-    overflow:hidden;
+    border-left:8px solid black;
+    border-right:8px solid black;
+    box-sizing:border-box;
+    color:#0f0;
+    font-family:monospace;
 }
 
 #titulo{
     text-align:center;
     padding:10px;
     border-bottom:1px solid #0f0;
+    font-size:14px;
     letter-spacing:2px;
 }
 
@@ -50,13 +70,13 @@ canvas{
     text-align:center;
     padding:10px;
     border-top:1px solid #0f0;
+    font-size:14px;
 }
 
-/* símbolo agora livre (não centralizado) */
 #simbolo{
     position:absolute;
     transform:translate(-50%,-50%) scale(0);
-    font-size:80px;
+    font-size:60px;
     opacity:0;
     transition:all 0.3s ease;
     pointer-events:none;
@@ -70,6 +90,8 @@ canvas{
 </head>
 <body>
 
+<div id="app">
+
 <div id="titulo">LOCALIZANDO FRATURAS DIMENSIONAIS</div>
 
 <div id="radarContainer">
@@ -78,6 +100,8 @@ canvas{
 </div>
 
 <div id="status">FALHAS: 0/3</div>
+
+</div>
 
 <script>
 
@@ -137,11 +161,13 @@ function setPos(x,y){
     iniciarAudio();
 }
 
+// mouse
 canvas.addEventListener("mousemove", e=>{
     const r = canvas.getBoundingClientRect();
     setPos(e.clientX - r.left, e.clientY - r.top);
 });
 
+// toque
 canvas.addEventListener("touchmove", e=>{
     const r = canvas.getBoundingClientRect();
     const t = e.touches[0];
@@ -223,7 +249,7 @@ function capturarFalha(){
     revelando = true;
     falhas++;
 
-    // 🎯 símbolo aparece no ponto da falha
+    // símbolo no local do alvo
     simbolo.style.left = alvo.x + "px";
     simbolo.style.top = alvo.y + "px";
 
