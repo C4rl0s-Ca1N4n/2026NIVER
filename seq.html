@@ -179,7 +179,21 @@ Digite as sequências na ordem correta para avançar. Use os botões ou as setas
     <div class="arrow" data-dir="right">→</div>  
 </div>
 
+<audio id="bg-music" loop>
+  <source src="assets/Liber-Tea.mp3" type="audio/mpeg">
+</audio>
+
 <script>
+
+const bgMusic = document.getElementById("bg-music");
+
+window.addEventListener("load", () => {
+  bgMusic.volume = 0.4; // volume mais baixo
+  bgMusic.play().catch(() => {
+    console.log("Autoplay bloqueado pelo navegador");
+  });
+});
+    
 // 🔥 DEFINA AS SEQUÊNCIAS AQUI
 const sequences = [
 
