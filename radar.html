@@ -13,18 +13,19 @@ body{
     display:flex;
     flex-direction:column;
     height:100vh;
+    overflow:hidden;
 }
 
 #titulo{
     text-align:center;
-    padding:15px;
+    padding:10px;
     border-bottom:1px solid #0f0;
+    letter-spacing:2px;
 }
 
 #radarContainer{
     flex:1;
     position:relative;
-    overflow:hidden;
 }
 
 canvas{
@@ -32,35 +33,51 @@ canvas{
     height:100%;
     display:block;
     background:#001100;
+    touch-action:none;
+}
+
+.glitch{
+    animation: glitch 0.1s infinite;
+}
+
+@keyframes glitch{
+    0%{transform:translate(3px,-2px);}
+    50%{transform:translate(-3px,2px);}
+    100%{transform:translate(2px,2px);}
 }
 
 #status{
     text-align:center;
     padding:10px;
-    height:30px;
     border-top:1px solid #0f0;
 }
 
-.tremor{
-    animation: tremor 0.05s infinite;
+/* símbolo agora livre (não centralizado) */
+#simbolo{
+    position:absolute;
+    transform:translate(-50%,-50%) scale(0);
+    font-size:80px;
+    opacity:0;
+    transition:all 0.3s ease;
+    pointer-events:none;
 }
 
-@keyframes tremor{
-    0%{transform:translate(2px,-2px);}
-    50%{transform:translate(-2px,2px);}
-    100%{transform:translate(2px,2px);}
+#simbolo.ativo{
+    transform:translate(-50%,-50%) scale(1);
+    opacity:1;
 }
 </style>
 </head>
 <body>
 
-<div id="titulo">RASTREANDO REALIDADE FRATURADA</div>
+<div id="titulo">LOCALIZANDO FRATURAS DIMENSIONAIS</div>
 
 <div id="radarContainer">
     <canvas id="radar"></canvas>
+    <div id="simbolo">⟁</div>
 </div>
 
-<div id="status"></div>
+<div id="status">FALHAS: 0/3</div>
 
 <script>
 
@@ -68,142 +85,175 @@ const canvas = document.getElementById("radar");
 const ctx = canvas.getContext("2d");
 const container = document.getElementById("radarContainer");
 const status = document.getElementById("status");
+const simbolo = document.getElementById("simbolo");
 
-// Ajusta tamanho real do canvas
 function resizeCanvas(){
     canvas.width = container.clientWidth;
     canvas.height = container.clientHeight;
 }
+
+let ponto = { x:100, y:100 };
+let alvo = { x:0, y:0 };
+
+function novoAlvo(){
+    alvo.x = Math.random() * canvas.width;
+    alvo.y = Math.random() * canvas.height;
+}
+
 resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
+novoAlvo();
 
-let ponto = { x: 200, y: 200 };
-let alvo = { x:1200, y: 400 }; // posição invisível
+window.addEventListener("resize", ()=>{
+    resizeCanvas();
+    novoAlvo();
+});
 
-// === ÁUDIO ===
-let audioCtx;
-let oscillator;
-let gainNode;
+
+// ===== ÁUDIO =====
+let audioCtx, osc, gain;
 
 function iniciarAudio(){
     if(!audioCtx){
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        oscillator = audioCtx.createOscillator();
-        gainNode = audioCtx.createGain();
 
-        oscillator.type = "sine";
-        oscillator.frequency.value = 100;
-        gainNode.gain.value = 0;
+        osc = audioCtx.createOscillator();
+        gain = audioCtx.createGain();
 
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        oscillator.start();
+        osc.type = "sine";
+        osc.frequency.value = 100;
+        gain.gain.value = 0;
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
     }
 }
 
-canvas.addEventListener("mousemove", (e)=>{
-    iniciarAudio(); // ativa som após primeira interação
 
-    const rect = canvas.getBoundingClientRect();
-    ponto.x = e.clientX - rect.left;
-    ponto.y = e.clientY - rect.top;
+// ===== CONTROLES =====
+function setPos(x,y){
+    ponto.x = x;
+    ponto.y = y;
+    iniciarAudio();
+}
+
+canvas.addEventListener("mousemove", e=>{
+    const r = canvas.getBoundingClientRect();
+    setPos(e.clientX - r.left, e.clientY - r.top);
 });
+
+canvas.addEventListener("touchmove", e=>{
+    const r = canvas.getBoundingClientRect();
+    const t = e.touches[0];
+    setPos(t.clientX - r.left, t.clientY - r.top);
+});
+
+
+// ===== DESENHO =====
+let pulso = 0;
 
 function desenhar(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
     ctx.strokeStyle="#0f0";
 
-    // grade retangular
-    for(let i=0;i<canvas.width;i+=100){
+    for(let i=0;i<canvas.width;i+=80){
         ctx.beginPath();
         ctx.moveTo(i,0);
         ctx.lineTo(i,canvas.height);
         ctx.stroke();
     }
 
-    for(let i=0;i<canvas.height;i+=100){
+    for(let i=0;i<canvas.height;i+=80){
         ctx.beginPath();
         ctx.moveTo(0,i);
         ctx.lineTo(canvas.width,i);
         ctx.stroke();
     }
 
-    // ponto do usuário
+    pulso += 2;
+    ctx.beginPath();
+    ctx.arc(ponto.x,ponto.y,pulso,0,Math.PI*2);
+    ctx.stroke();
+
+    if(pulso > 300) pulso = 0;
+
     ctx.fillStyle="#0f0";
     ctx.beginPath();
-    ctx.arc(ponto.x,ponto.y,8,0,Math.PI*2);
+    ctx.arc(ponto.x,ponto.y,6,0,Math.PI*2);
     ctx.fill();
 }
 
-function distancia(){
+
+// ===== LÓGICA =====
+function dist(){
     let dx = ponto.x - alvo.x;
     let dy = ponto.y - alvo.y;
     return Math.sqrt(dx*dx + dy*dy);
 }
 
-let ecoAtivo = false;
+let falhas = 0;
+let revelando = false;
 
-function atualizar(){
+function loop(){
     desenhar();
 
-    let d = distancia();
-    let proximidade = Math.max(0, 400 - d);
+    let d = dist();
+    let prox = Math.max(0, 300 - d);
 
-    if(gainNode){
-        gainNode.gain.value = proximidade / 800;
-        oscillator.frequency.value = 100 + proximidade;
+    if(gain){
+        gain.gain.value = prox/600;
+        osc.frequency.value = 100 + prox*2;
     }
 
-    // tremor apenas no radar
-    if(proximidade > 50){
-        container.classList.add("tremor");
+    if(prox > 100){
+        container.classList.add("glitch");
     } else {
-        container.classList.remove("tremor");
+        container.classList.remove("glitch");
     }
 
-    // eco metálico perto
-    if(d < 60 && !ecoAtivo && audioCtx){
-        ecoMetalico();
-        ecoAtivo = true;
+    if(d < 20 && !revelando){
+        capturarFalha();
     }
 
-    if(d < 10){
-        ruptura();
-    }
-
-    requestAnimationFrame(atualizar);
+    requestAnimationFrame(loop);
 }
 
-function ecoMetalico(){
-    let osc = audioCtx.createOscillator();
-    let gain = audioCtx.createGain();
+function capturarFalha(){
+    revelando = true;
+    falhas++;
 
-    osc.type="triangle";
-    osc.frequency.value=900;
+    // 🎯 símbolo aparece no ponto da falha
+    simbolo.style.left = alvo.x + "px";
+    simbolo.style.top = alvo.y + "px";
 
-    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+1.5);
+    simbolo.classList.add("ativo");
 
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
+    status.innerText = "FALHAS: " + falhas + "/3";
 
-    osc.start();
-    osc.stop(audioCtx.currentTime+1.5);
+    if(gain) gain.gain.value = 0;
+
+    setTimeout(()=>{
+        simbolo.classList.remove("ativo");
+
+        if(falhas >= 3){
+            finalizar();
+        } else {
+            novoAlvo();
+            revelando = false;
+        }
+    },800);
 }
 
-function ruptura(){
-    status.innerText="ALINHAMENTO COM REALIDADE FRATURADA ESTABELECIDA.";
-    container.classList.remove("tremor");
-
-    if(gainNode) gainNode.gain.value = 0;
+function finalizar(){
+    status.innerText = "RUPTURA ESTÁVEL. ACESSO LIBERADO.";
 
     setTimeout(()=>{
         window.location.href="livro1.html";
     },2000);
 }
 
-atualizar();
+loop();
 
 </script>
 
