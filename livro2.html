@@ -2,59 +2,69 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
 <title>Arquivo Recuperado - Encerramento ARG</title>
 
 <style>
-/* Corpo da página */
-body{
+
+html, body{
     margin:0;
-    background:#0a2e0a; /* verde escuro */
-    color:#c8ffc8; /* verde suave para texto */
+    padding:0;
+    width:100%;
+    min-height:100%;
+    background:#0a2e0a;
+    color:#c8ffc8;
     font-family: monospace;
+}
+
+/* layout geral */
+body{
     display:flex;
     flex-direction:column;
     align-items:center;
-    min-height:100vh;
-    overflow-x:hidden;
 }
 
-/* Topo */
+/* topo */
 #topo{
     width:100%;
     text-align:center;
-    padding:15px;
+    padding:12px;
     border-bottom:2px solid #3fa63f;
     background:#0f3f0f;
-    color:#e0ffe0;
     font-weight:bold;
+    font-size:clamp(14px, 2.5vw, 18px);
     animation: brilhoTop 3s infinite alternate;
 }
 
-/* Animação de brilho no topo */
 @keyframes brilhoTop {
     0% { border-color:#3fa63f; }
     50% { border-color:#5fc95f; }
     100% { border-color:#3fa63f; }
 }
 
-/* Mensagem de instrução */
+/* mensagem */
 #mensagem{
     text-align:center;
     padding:20px;
-    color:#d0ffd0;
+    font-size:clamp(16px, 4vw, 20px);
+    max-width:700px;
 }
 
-/* Conteúdo central */
+/* conteúdo */
 #conteudo{
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:20px;
+    gap:25px;
+    width:100%;
+    padding:10px;
 }
 
-/* Capa do livro */
+/* capa responsiva */
 #capa{
-    width:220px; 
+    width:70vw;
+    max-width:320px;
     cursor:pointer;
     border:2px solid #3fa63f;
     transition:0.3s;
@@ -66,27 +76,29 @@ body{
     box-shadow:0 0 20px #5fc95f;
 }
 
-/* Animação de brilho na borda */
 @keyframes brilhoBorda {
     0% { border-color:#3fa63f; box-shadow:0 0 5px #3fa63f; }
     50% { border-color:#5fc95f; box-shadow:0 0 15px #5fc95f; }
     100% { border-color:#3fa63f; box-shadow:0 0 5px #3fa63f; }
 }
 
-/* Área de ações (botões) */
+/* botões */
 #acoes{
     display:flex;
     gap:15px;
+    flex-wrap:wrap;
+    justify-content:center;
 }
 
-/* Botões */
 button{
     background:#3fa63f;
     border:2px solid #1e5c1e;
-    padding:10px 20px;
+    padding:12px 20px;
     cursor:pointer;
     font-family:monospace;
     color:#f0fff0;
+    font-size:16px;
+    min-width:140px;
     transition:0.3s;
     animation: brilhoBotao 2s infinite alternate;
 }
@@ -95,24 +107,22 @@ button:hover{
     background:#5fc95f;
 }
 
-/* Brilho animado nos botões */
 @keyframes brilhoBotao {
     0% { border-color:#1e5c1e; box-shadow:0 0 5px #3fa63f; }
     50% { border-color:#5fc95f; box-shadow:0 0 15px #5fc95f; }
     100% { border-color:#1e5c1e; box-shadow:0 0 5px #3fa63f; }
 }
 
-/* Leitor fullscreen */
+/* leitor fullscreen */
 #leitorFullscreen{
     display:none;
     position:fixed;
     top:0;
     left:0;
     width:100vw;
-    height:100vh;
+    height:100dvh;
     background:#0a2e0a;
     z-index:9999;
-    animation:none;
     overflow:hidden;
 }
 
@@ -120,7 +130,6 @@ button:hover{
     animation: vibrar 0.1s infinite;
 }
 
-/* Vibrar leve fundo quando PDF abre */
 @keyframes vibrar {
     0% { transform: translate(0,0); }
     25% { transform: translate(1px,-1px); }
@@ -135,11 +144,11 @@ button:hover{
     border:none;
 }
 
-/* Mensagem final ARG */
+/* mensagem final */
 #mensagemFinal {
     display:none;
     text-align:center;
-    font-size:1.2rem;
+    font-size:clamp(16px, 4vw, 22px);
     color:#d0ffd0;
     padding:20px;
     animation: brilhoMensagem 3s infinite alternate;
@@ -150,6 +159,7 @@ button:hover{
     50% { color:#e0ffe0; }
     100% { color:#c8ffc8; }
 }
+
 </style>
 </head>
 <body>
@@ -192,10 +202,8 @@ O multiverso agora aguarda por você em novas aventuras…
 const bgMusic = document.getElementById("bg-music");
 
 window.addEventListener("load", () => {
-  bgMusic.volume = 0.4; // volume mais baixo
-  bgMusic.play().catch(() => {
-    console.log("Autoplay bloqueado pelo navegador");
-  });
+  bgMusic.volume = 0.4;
+  bgMusic.play().catch(() => {});
 });
 
 function abrirLeitura(){
@@ -205,27 +213,26 @@ function abrirLeitura(){
     leitor.style.display = "block";
     leitor.classList.add("vibrando");
 
-    // Exibe mensagem final com leve atraso
     setTimeout(() => {
         mensagemFinal.style.display = "block";
     }, 1000);
 
-    // Tenta fullscreen
     if (leitor.requestFullscreen) {
         leitor.requestFullscreen();
     }
 }
 
-// Fecha o leitor se sair do fullscreen
 document.addEventListener("fullscreenchange", () => {
     if (!document.fullscreenElement) {
         const leitor = document.getElementById("leitorFullscreen");
         const mensagemFinal = document.getElementById("mensagemFinal");
+
         leitor.style.display = "none";
         leitor.classList.remove("vibrando");
         mensagemFinal.style.display = "none";
     }
 });
+
 </script>
 
 </body>
